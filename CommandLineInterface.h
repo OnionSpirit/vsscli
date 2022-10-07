@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include "CommonTypes.h"
+#include <cstring>
 
 #define COMMAND_ERROR "Ошибка команды: "
 #define INPUT_ERROR "Ошибка ввода: "
@@ -22,16 +22,16 @@ public:
 
     explicit CommandLineInterface(void* work_data, void(*startingAction)());
 
-    enum SpecialSpaceStatements{
-        final_executable_space = 0,
-        primal_executable_space = -1,
-        any_executable_space = -2,
-        previous_executable_space = -3,
-        same_executable_space = -4,
+    enum SpecialNodeStatements{
+        final_executable_node = 0,
+        primal_executable_node = -1,
+        any_executable_node = -2,
+        previous_executable_node = -3,
+        same_executable_node = -4,
     };
 
-    void addCommand(int new_space_ID,
-                    int executable_space_ID,
+    void addCommand(int new_node_ID,
+                    int executable_node_ID,
                     const std::string & syntax,
                     void(*commandRealization)(void*, const std::vector<std::string>&));
 
@@ -42,9 +42,8 @@ public:
         while(true){
             std::cout << _msg << '\t' << "[Y/N]" << std::endl;
             std::cin >> answer;
-            toLower(answer);
-            if(answer == "y") return true;
-            if(answer == "n") return false;
+            if(0 == strncasecmp(answer.c_str(), "y", 1)) return true;
+            if(0 == strncasecmp(answer.c_str(), "n", 1)) return false;
             std::cout << INPUT_ERROR << std::endl;
         }
     }
@@ -52,13 +51,13 @@ public:
 private:
 
     class Command{
-        Command(int new_space_ID,
-                int executable_space_ID,
+        Command(int new_node_ID,
+                int executable_node_ID,
                 void(*commandRealization)(void*, const std::vector<std::string>&));
 
     private:
-        int new_space_ID;
-        int executable_space_ID;
+        int new_node_ID;
+        int executable_node_ID;
         void(*callback)(void*, const std::vector<std::string>&);
 
         friend CommandLineInterface;
@@ -67,7 +66,7 @@ private:
     std::vector<std::string> Args;
     std::map<std::string, Command> CommandPool;
     void(*m_main_frame)();
-    int m_current_space_ID;
+    int m_current_node_ID;
     void* processing_struct;
 };
 
